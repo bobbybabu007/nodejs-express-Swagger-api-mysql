@@ -1,0 +1,2 @@
+docker container run --rm -idt --name app -p 3000:3000 -v c:\Users\bobby\code\projects\2-exercise-nodejs-mysql\6\:/app node:10-alpine
+docker image build -t cosmos-gitlabci-jdk8-maven-gradle .

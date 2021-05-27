@@ -1,0 +1,9 @@
+FROM mysql:latest as builder
+
+# Creds needed for intialization
+ENV MYSQL_ROOT_PASSWORD=bobby
+ENV MYSQL_USER=bobby
+ENV MYSQL_ROOT_PASSWORD=bobby
+
+COPY ./setup-titanic.sql /docker-entrypoint-initdb.d/
+COPY ./train-titanic.sql /docker-entrypoint-initdb.d/
