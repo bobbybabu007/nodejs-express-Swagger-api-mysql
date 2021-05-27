@@ -1,0 +1,2 @@
+Project code on a Containerized [NodeJS, Express, Swagger] API for a MySQL Database.
+Containerized using Docker/Docker-Compose and Deploy to a OpenShift PaaS/Cloud k8s cluster using Terraform/Ansible IaC. 
