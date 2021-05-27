@@ -1,0 +1,8 @@
+docker container run -idt  -p 3000:3000 --name app titanic-api:v2
+docker container run --rm -idt --name app-test -p 3000:3000 -v c:\Users\bobby\code\projects\2-exercise-nodejs-mysql\7\:/tmp titanic-api:v2
+docker container run --rm -idt --name app-test -p 3001:3001 -v c:\Users\bobby\code\projects\2-exercise-nodejs-mysql\7\:/tmp node:10-alpine
+docker container logs app -f
+
+docker image build -t db-check -f .\Dockerfile-mysql .
+docker run -idt -p 3306:3306 --name db -e MYSQL_ROOT_PASSWORD=bobby -e MYSQL_USER=bobby -e MYSQL_PASSWORD=bobby db
+docker container logs db -f

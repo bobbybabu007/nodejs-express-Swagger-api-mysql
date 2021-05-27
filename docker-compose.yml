@@ -1,0 +1,53 @@
+version: '3'
+services:
+  app:
+    container_name: app
+    build: .
+    ports: 
+      - 3000:3000 
+    restart: on-failure
+    volumes:
+      - app:/app/
+    depends_on:
+      - db          
+    networks:
+      - fullstack
+
+  db:
+    image: bobbybabu007/titanic-mysql:latest
+    container_name: db
+    ports: 
+      - 3306:3306
+    environment: 
+      - MYSQL_ROOT_HOST=${DB_HOST} 
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - database_mysql:/var/lib/mysql
+    networks:
+      - fullstack
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: db-admin
+    depends_on:
+      - db
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=${DB_USER}
+      - PMA_PORT=${DB_PORT}
+      - PMA_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 9090:80
+    restart: always
+    networks:
+      - fullstack
+
+volumes:
+  app:
+  database_mysql:                  
+
+networks:
+  fullstack:
+    driver: bridge

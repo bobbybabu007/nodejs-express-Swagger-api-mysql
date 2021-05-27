@@ -1,0 +1,46 @@
+FROM node:10-alpine
+
+LABEL maintainer="Bobby Babu"
+
+RUN apk --update --no-cache add \
+        ca-certificates \
+        git \
+        openssh-client \
+        openssl \
+        python3 \
+        py3-pip \
+        py3-cryptography \
+        rsync \
+        sshpass \
+        mysql-client \
+        bash
+
+RUN apk --update add --virtual \
+        .build-deps \
+        python3-dev \
+        libffi-dev \
+        openssl-dev \
+        build-base \
+        curl
+
+# RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app && \
+# RUN chgrp -R 0 "/home/node/app" && chmod -R g=u "/home/node/app" && chmod +x "/home/node/app"
+
+RUN mkdir -p /home/node/app && \
+    git clone https://github.com/bobbybabu007/nodejs-express-Swagger-api-mysql.git /home/node/app/ && \
+    chown -R node:node /home/node/app
+    
+WORKDIR /home/node/app
+
+RUN npm install && \
+    npm i --save mysql2 && \
+    npm i --save express && \
+    npm i swagger-jsdoc@6.0.1 && \
+    npm i swagger-ui-express@4.1.6
+
+USER node
+
+#COPY --chown=node:node . .
+EXPOSE 3000
+
+CMD [ "node", "index.js" ]
