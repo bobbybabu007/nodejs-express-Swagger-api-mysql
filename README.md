@@ -1,15 +1,15 @@
-# 1. Project Overview
+## 1. Project Overview
 
-## Project code on a Containerized [NodeJS, Express, Swagger] API for a MySQL Database.
-## Containerized using Docker/Docker-Compose and Deploy to a OpenShift PaaS/Cloud k8s cluster using Terraform/Ansible IaC. 
+1.1 Project code on a Containerized [NodeJS, Express, Swagger] API for a MySQL Database.
+1.2 Containerized using Docker/Docker-Compose and Deploy to a OpenShift PaaS/Cloud k8s cluster using Terraform/Ansible IaC. 
 
-# 2. IaC Provisioning
+## 2. IaC Provisioning
 
 Provision an AWS VPC using [Terraform](https://www.terraform.io/) scripts. This would create a VPC, 2 private subnets, 1 public subnet, 1 private security group, and 1 public security group. The layout of this looks like following:
 
 ![VPC Layout](IaC/static/layout.png)
 
-## 2,1 Module Breakdown
+### 2,1 Module Breakdown
 
 The scripts in this project have been broken down into four modules
 - vpc:
@@ -25,7 +25,7 @@ The scripts in this project have been broken down into four modules
     - input: private and public subnet id's from respective modules
     - output: private and public security group id's
 
-## 2.2 Executing the scripts
+### 2.2 Executing the scripts
 
 - Install terraform
 - Switch to the IaC directory
@@ -46,26 +46,26 @@ $ terraform apply
 ... 
 ```
 
-# 3. Build Image & Pushing to Repository
+## 3. Build Image & Pushing to Repository
 
-## 3.1 Build the images 
+### 3.1 Build the images 
 
 ```
 docker image build -t db -f .\Dockerfile-mysql .
 docker image build -t app -f .\Dockerfile-app .
 ```
-## 3.2 Test the images for functionality over http://localhost:3000
+### 3.2 Test the images for functionality over http://localhost:3000
 
-3.2.1 Create the containers
+#### 3.2.1 Create the containers
 
 ```
 docker container run -idt  -p 3000:3000 --name app app
 docker container run -idt -p 3306:3306 --name db -e MYSQL_ROOT_PASSWORD=bobby -e MYSQL_USER=root -e MYSQL_PASSWORD=bobby db
 ```
 
-3.2.2 Check API Functionality from app container or MySQL Workbench
+#### 3.2.2 Check API Functionality from app container or MySQL Workbench
 
-Creds & Configs 
+Use the following Creds & Configs to connect to the titanic database 
 ```
 - Hostname      => 127.0.0.1
 - Port          => 3306
@@ -74,30 +74,36 @@ Creds & Configs
 - Default Schema=> titanic
 ```
 
-## 3.3 Tag and push the image to DockerHub / Private Repository [Nexus/Artifactory] 
+### 3.3 Tag and push the image to DockerHub / Private Repository [Nexus/Artifactory] 
 
-API App Image
+#### API App Image
 ```
 docker image tag app bobbybabu007/titanic-api:latest
 docker push bobbybabu007/titanic-api:latest
 ```
-MySQL DB Image
+#### MySQL DB Image
 ```
 docker image tag db bobbybabu007/titanic-mysql:latest
 docker push bobbybabu007/titanic-mysql:latest
 ```
 
-# 4. Building an NPMStatics Multibranch Pipeline on JenkinsCI in k8s/OCP Cluster [In progress]
+## 4. Building an NPMStatics Multibranch Pipeline on JenkinsCI in k8s/OCP Cluster [In progress]
 
 Using Jenkinsci helm charts, create a Jenkins pipeline on the provisioned cluster
 
 
-# 5. Realise the Fullstack over k8s using AWS Elastic Kubernetes Service
+## 5. Realise the Fullstack over k8s using AWS Elastic Kubernetes Service
 
-Terraform IaC Scripting : In progress 
-Helm Chart Configuration: In Progress
+### 5.1 Terraform IaC Scripting: 
+In progress 
 
-# 6. Realise the Fullstack over k8s using AWS OpenShift PaaS 
+### 5.2 Helm Chart Configuration: 
+In Progress
 
-Terraform IaC Scripting : Incomplete 
-OpenShift Config Maps   : Incomplete 
+## 6. Realise the Fullstack over k8s using AWS OpenShift PaaS 
+
+### 6.1 Terraform IaC Scripting: 
+Incomplete 
+
+### 6.2 OpenShift Config Maps: 
+Incomplete 
