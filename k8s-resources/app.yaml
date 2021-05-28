@@ -1,0 +1,85 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  labels:
+    app: fullstack
+spec:
+  type: LoadBalancer  # change to LoadBalancer/externalIP once AWS platform chosen [Openshift-ROSA/Kubernetes-EKS]
+  ports:
+    - protocol: tcp
+      port: 80
+      targetPort: 3000
+  selector:
+    app: fullstack
+    tier: frontend
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-pv-claim
+  labels:
+    app: fullstack
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume                     
+metadata:
+  name: app-pv-volume
+  labels:
+    type: local
+    app: fullstack
+spec:
+  storageClassName: manual                 
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath: 
+    path: "/mnt/data-api"                                
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: apps/v1 #  for k8s versions before 1.9.0 use apps/v1beta2  and before 1.8.0 use extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    app: fullstack
+spec:
+  selector:
+    matchLabels:
+      app: fullstack
+      tier: frontend
+  strategy:
+    type: Recreate
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: fullstack
+        tier: frontend
+    spec:
+      containers:
+      - image: bobbybabu007/titanic-api:v3
+        name: app
+        imagePullPolicy: "IfNotPresent"
+        envFrom:                               
+        - secretRef:
+            name: db-secret
+        ports:
+        - containerPort: 3000
+          name: app
+        volumeMounts:
+        - name: wordpress-persistent-storage
+          mountPath: /var/lib/misc
+      volumes:
+      - name: app-persistent-storage
+        persistentVolumeClaim:
+          claimName: app-pv-claim
+...

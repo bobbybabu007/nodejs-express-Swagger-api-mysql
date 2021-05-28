@@ -1,0 +1,6 @@
+apiVersion: v2
+name: app
+description: NodeJS Swagger API for Titanic DB
+type: application
+version: 1.0.0
+appVersion: "1.10"

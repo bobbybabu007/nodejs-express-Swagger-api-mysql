@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fullstack-db
+  labels:
+    app: fullstack-db
+spec:
+  type: NodePort  # change to clusterIP once ingress routing to AWS completes
+  ports:
+    - port: 3306
+  selector:                  
+    app: fullstack-db
+    tier: db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim             
+metadata:  
+  name: db-pv-claim
+  labels:
+    app: fullstack-db
+spec:                                   
+  storageClassName: manual              
+  accessModes:
+    - ReadWriteMany                     
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolume                     
+metadata:
+  name: db-pv-volume
+  labels:
+    type: local
+    app: fullstack-db
+spec:
+  storageClassName: manual                 
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath: 
+    path: "/mnt/data"                                
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fullstack-db
+  labels:
+    app: fullstack-db
+spec:
+  selector:
+    matchLabels:
+      app: fullstack-db
+      tier: db
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: fullstack-db
+        tier: db
+    spec:
+      containers:
+        - image: bobbybabu007/titanic-mysql:v2
+          name: db
+          imagePullPolicy: "IfNotPresent"
+
+          envFrom:                               
+          - secretRef:
+              name: db-secret
+
+          ports:
+          - containerPort: 3306
+            name: db
+          volumeMounts:
+            - name: db-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:                       
+      - name: db-persistent-storage
+        persistentVolumeClaim:
+          claimName: db-pv-claim
