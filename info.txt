@@ -4,5 +4,5 @@ docker container run --rm -idt --name app-test -p 3001:3001 -v c:\Users\bobby\co
 docker container logs app -f
 
 docker image build -t db-check -f .\Dockerfile-mysql .
-docker run -idt -p 3306:3306 --name db -e MYSQL_ROOT_PASSWORD=bobby -e MYSQL_USER=bobby -e MYSQL_PASSWORD=bobby db
-docker container logs db -f
+docker run -idt -p 3306:3306 --name db -e MYSQL_ROOT_PASSWORD=bobby -e MYSQL_USER=root -e MYSQL_PASSWORD=bobby db
+docker container logs db1 -f
